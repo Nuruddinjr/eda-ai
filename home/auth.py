@@ -84,7 +84,7 @@ class VerifyLoginOtp(GenericAPIView):
         phone_number = data.get('username')
         otp_code = data.get('otp')
 
-        otp_entry = SmsModel.objects.filter(user__username=phone_number, code=otp_code).first()
+        otp_entry = SmsModel.objects.filter(user=phone_number, code=otp_code).first()
 
         if not otp_entry:
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
