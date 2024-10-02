@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, Payment, AccessToken, Users
+from .models import Order, Payment, AccessToken, Users, SmsModel
 
 
 @admin.register(Order)
@@ -14,3 +14,4 @@ class PaymentAdmin(admin.ModelAdmin):
 
 admin.site.register(AccessToken)
 admin.site.register(Users)
+admin.site.register(SmsModel)
