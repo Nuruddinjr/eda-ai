@@ -20,10 +20,7 @@ class UserRegister(GenericAPIView):
         user = Users.objects.filter(username=data['username']).first()
         if user:
             return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        user = Users(
-            username=data['username']
-        )
-        user.save()
+        
         otp_code = str(random.randint(100000, 999999))
 
         otp_entry = SmsModel.objects.create(user=user, code=otp_code)
