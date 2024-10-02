@@ -94,3 +94,21 @@ class VerifyLoginOtp(GenericAPIView):
         token = AccessToken.objects.get_or_create(user=user)[0]
 
         return Response({"access_token": token.token}, status=status.HTTP_200_OK)
+
+
+class UserTries(GenericAPIView):
+    def get(self, request):
+        user = Users.objects.get(username=request.user.username)
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'user_tries': user.tries}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data
+        user = Users.objects.get(username=data['username'])
+        if not user:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        user.tries += 1
+
+        return Response(data={'user_tries': user.tries}, status=status.HTTP_200_OK)

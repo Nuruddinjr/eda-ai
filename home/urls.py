@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import PaymeCallBackAPIView, confirm_product
-from .auth import UserRegister, VerifyOtp, Login, VerifyLoginOtp
+from .auth import UserRegister, VerifyOtp, Login, VerifyLoginOtp, UserTries
 
 urlpatterns = [
     path('payme/callback', PaymeCallBackAPIView.as_view()),
@@ -11,4 +11,8 @@ urlpatterns = [
     path("register-two/", VerifyOtp.as_view()),
     path("login-one/", Login.as_view()),
     path("login-two/", VerifyLoginOtp.as_view()),
+    
+    path("user-tries/", UserTries.as_view()),
+
+
 ]
