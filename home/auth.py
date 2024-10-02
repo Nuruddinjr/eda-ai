@@ -26,7 +26,7 @@ class UserRegister(GenericAPIView):
         otp_code = str(random.randint(100000, 999999))
 
         # Create OTP entry without user
-        otp_entry = SmsModel.objects.create(code=otp_code)
+        otp_entry = SmsModel.objects.create(user=data['username'], code=otp_code)
 
         # Send OTP to the user's phone number
         sms_send(data['username'], otp_code)
@@ -66,7 +66,7 @@ class Login(GenericAPIView):
         phone_number = data.get('username')
 
         user = Users.objects.filter(username=phone_number).first()
-        if not user:
+        if user:
             otp_code = str(random.randint(100000, 999999))
 
             otp_entry = SmsModel.objects.create(user=user, code=otp_code)
@@ -75,7 +75,7 @@ class Login(GenericAPIView):
 
             return Response({'message': 'OTP sent to your phone number'}, status=status.HTTP_200_OK)
 
-        return Response({'error': 'Username exists please log in'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': 'Username not found'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyLoginOtp(GenericAPIView):

@@ -56,7 +56,7 @@ class AccessToken(models.Model):
 
 
 class SmsModel(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.CharField(max_length=20)
     code = models.CharField(max_length=20, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
