@@ -172,3 +172,8 @@ PAYME: dict = {
 PAYMENT_HOST = 'https://mysafar.uz'
 PAYMENT_USES_SSL = True  # set the True value if you are using the SSL
 PAYMENT_MODEL = 'home.Payment'
+
+
+SMS_URL = 'https://send.smsxabar.uz/broker-api/send'
+SMS_LOGIN = 'pulatovschool'
+SMS_PASSWORD = '3sg]OT?kpFw^'
