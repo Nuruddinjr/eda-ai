@@ -17,20 +17,9 @@ class UserRegister(GenericAPIView):
     def post(self, request):
         data = request.data
 
-        # Check if the user already exists
-        user = Users.objects.filter(username=data['username']).first()
-        if user:
-            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Generate OTP
         otp_code = str(random.randint(100000, 999999))
-
-        # Create OTP entry without user
-        otp_entry = SmsModel.objects.create(user=data['username'], code=otp_code)
-
-        # Send OTP to the user's phone number
+        SmsModel.objects.create(user=data['username'], code=otp_code)
         sms_send(data['username'], otp_code)
-
         return Response({'message': 'OTP sent to your phone number'}, status=status.HTTP_200_OK)
 
 
@@ -38,54 +27,7 @@ class VerifyOtp(GenericAPIView):
     def post(self, request):
         data = request.data
 
-        # Check if the OTP is valid for the username
         otp_entry = SmsModel.objects.filter(code=data['otp']).first()
-        if not otp_entry:
-            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if the OTP has expired
-        if timezone.now() - otp_entry.created_at > timedelta(minutes=3):
-            otp_entry.delete()  # Clean up expired OTP
-            return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create the user now that OTP is confirmed
-        user = Users.objects.create(username=data['username'])
-        otp_entry.delete()  # Clean up OTP entry after use
-
-        # Create a token for the user (optional)
-        token = AccessToken.objects.create(user=user)
-
-        return Response({"access_token": token.token}, status=status.HTTP_201_CREATED)
-
-
-class Login(GenericAPIView):
-    serializer_class = UserSerializer
-
-    def post(self, request):
-        data = request.data
-        phone_number = data.get('username')
-
-        user = Users.objects.filter(username=phone_number).first()
-        if user:
-            otp_code = str(random.randint(100000, 999999))
-
-            otp_entry = SmsModel.objects.create(user=user, code=otp_code)
-
-            sms_send(data['username'], otp_code)
-
-            return Response({'message': 'OTP sent to your phone number'}, status=status.HTTP_200_OK)
-
-        return Response({'error': 'Username not found'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class VerifyLoginOtp(GenericAPIView):
-    def post(self, request):
-        data = request.data
-        phone_number = data.get('username')
-        otp_code = data.get('otp')
-
-        otp_entry = SmsModel.objects.filter(user=phone_number, code=otp_code).first()
-
         if not otp_entry:
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -93,13 +35,16 @@ class VerifyLoginOtp(GenericAPIView):
             otp_entry.delete()
             return Response({'error': 'OTP has expired'}, status=status.HTTP_400_BAD_REQUEST)
 
-        otp_entry.delete()
+        user_status = Users.objects.filter(username=data['username']).first()
 
-        user = Users.objects.get(username=phone_number)
+        if user_status:
+            token = AccessToken.objects.get_or_create(user=user_status)[0]
+            return Response({"access_token": token.token, "login": "success"}, status=status.HTTP_200_OK)
 
-        token = AccessToken.objects.get_or_create(user=user)[0]
+        user = Users.objects.create(username=data['username'])
+        token = AccessToken.objects.create(user=user)
 
-        return Response({"access_token": token.token}, status=status.HTTP_200_OK)
+        return Response({"access_token": token.token, "register": "success"}, status=status.HTTP_201_CREATED)
 
 
 class UserTries(GenericAPIView):
