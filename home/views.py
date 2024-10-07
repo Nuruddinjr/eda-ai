@@ -2,7 +2,7 @@ from django.shortcuts import render
 from drf_yasg.utils import swagger_auto_schema
 from click_api.views import PyClickMerchantAPIView
 from home.models import Order, Payment
-from rest_framework.decorators import  api_view
+from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from uuid import uuid4
 from rest_framework.response import Response
@@ -11,6 +11,8 @@ from home.serializers import OrderSerializer
 
 from payme.views import MerchantAPIView
 from home.models import OrderTransactionsModel
+
+
 # from home.modules.avia import ticketed_user_notify
 # from home.services.avia import methods as avia_methods
 # from home.utils.notify import notify
@@ -30,7 +32,7 @@ class PaymeCallBackAPIView(MerchantAPIView):
                 tr.is_finished = True
                 tr.status_type = OrderTransactionsModel.StatusTypeChoices.confirm
                 tr.save(update_fields=["status", "is_finished", "status_type"])
-                
+
                 # Bu yerda to'lov muvaffaqiyati haqida log yoziladi
                 print(f"To'lov muvaffaqiyatli yakunlandi: {order_id}")
             except OrderTransactionsModel.DoesNotExist:
@@ -47,11 +49,6 @@ class PaymeCallBackAPIView(MerchantAPIView):
             tr.save(update_fields=["is_canceled", "status_type"])
         except OrderTransactionsModel.DoesNotExist:
             print(f"Bekor qilinadigan tranzaktsiya topilmadi: {order_id}")
-
-
-
-
-
 
 
 # confirm

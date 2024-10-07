@@ -49,17 +49,22 @@ class VerifyOtp(GenericAPIView):
 
 class UserTries(GenericAPIView):
     def get(self, request):
-        user = Users.objects.get(username=request.user.username)
+        auth_header = request.headers.get('Authorization').split(' ')[1]
+        user_token = AccessToken.objects.get(token=auth_header)
+        user = Users.objects.get(username=user_token.user)
         if not user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         return Response({'user_tries': user.tries}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        data = request.data
-        user = Users.objects.get(username=data['username'])
+        auth_header = request.headers.get('Authorization').split(' ')[1]
+        user_token = AccessToken.objects.get(token=auth_header)
+        user = Users.objects.get(username=user_token.user)
         if not user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        if user.tries == 3:
+            return Response({'message': 'You have used 3 free tries'}, status=status.HTTP_400_BAD_REQUEST)
         user.tries += 1
-
+        user.save()
         return Response(data={'user_tries': user.tries}, status=status.HTTP_200_OK)
