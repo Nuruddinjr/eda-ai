@@ -62,7 +62,7 @@ def confirm_product(request):
         case "CLICK":
             click_payment = Payment.objects.create(variant="click", transaction_id=str(uuid4()),
                                                    currency="sum", amount=tr.amount)
-            return_url = 'https://mysafar.uz/'  # Foydalanuvchini qaytarish kerak bo'lgan URL
+            return_url = 'http://159.89.107.246/'  # Foydalanuvchini qaytarish kerak bo'lgan URL
             url = PyClickMerchantAPIView.generate_url(order_id=click_payment.id, amount=tr.amount,
                                                       return_url=return_url)
             print(url, "^^^^^^^^^^^^^   url  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")

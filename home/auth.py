@@ -64,7 +64,7 @@ class UserTries(GenericAPIView):
         if not user:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         if user.tries == 3:
-            return Response({'message': 'You have used 3 free tries'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'You have used 3 free tries', 'status': True}, status=status.HTTP_400_BAD_REQUEST)
         user.tries += 1
         user.save()
-        return Response(data={'user_tries': user.tries}, status=status.HTTP_200_OK)
+        return Response(data={'user_tries': user.tries, 'status': False}, status=status.HTTP_200_OK)
