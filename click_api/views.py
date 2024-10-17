@@ -49,5 +49,5 @@ class PyClickMerchantAPIView(APIView):
         merchant_id = settings.PAYMENT_VARIANTS["click"][1]['merchant_id']
         url = f"https://my.click.uz/services/pay?service_id={service_id}&merchant_id={merchant_id}&amount={amount}&transaction_param={order_id}"
         if return_url:
-            url += f"&return_url=https://mysafar.uz"
+            url += f"&return_url=http://159.89.107.246"
         return url

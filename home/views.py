@@ -72,3 +72,4 @@ def confirm_product(request):
             tr.type = OrderTransactionsModel.TransferTypeChoices.payme
             tr.save(update_fields=["type"])
             return Response({"url": generate_link(tr.id, tr.amount * 100)})
+

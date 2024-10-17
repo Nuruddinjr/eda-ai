@@ -158,7 +158,7 @@ PAYME: dict = {
     'PAYME_CALL_BACK_URL': 'https://ec3c-5-133-120-251.ngrok-free.app/payme/callback',  # merchant api callback url
     'PAYME_ACCOUNT': 'order_id',
 }
-PAYMENT_HOST = 'https://mysafar.uz'
+PAYMENT_HOST = 'http://159.89.107.246'
 PAYMENT_USES_SSL = True  # set the True value if you are using the SSL
 PAYMENT_MODEL = 'home.Payment'
 
