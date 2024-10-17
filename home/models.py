@@ -145,6 +145,7 @@ class Payment(BasePayment):
     """
     click model
     """
+    amount = models.CharField(max_length=255, blank=True, null=True)
     delivery = models.DecimalField(max_digits=9, decimal_places=2, default="0.0", null=True)
     tax = models.DecimalField(max_digits=9, decimal_places=2, default="0.0", null=True)
     description = models.TextField(blank=True, default="", null=True)
