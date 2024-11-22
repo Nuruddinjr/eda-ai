@@ -147,18 +147,18 @@ CORS_ALLOWED_ORIGINS = [
 
 PAYME_ID = "611b587a754e932e68fe396d"
 PAYME_ACCOUNT = "order_id"
-PAYME_CALL_BACK_URL = "https://ec3c-5-133-120-251.ngrok-free.app/payme/callback"
+PAYME_CALL_BACK_URL = "http://209.38.235.116/payme/callback"
 PAYME_URL = "https://checkout.paycom.uz"
 ORDER_MODEL = "home.models.OrderTransactionsModel"
 
 PAYME: dict = {
     'PAYME_ID': '611b587a754e932e68fe396d',
-    'PAYME_KEY': 'Y8qi0TMazXAG?RCpAj7PNDInZYr2RTEjtxCe',
+    'PAYME_KEY': 'G2Q1aF29xHRxP7iwre7fqDTvA2Cggh4c3ITb',
     'PAYME_URL': 'https://checkout.test.paycom.uz/api/',
-    'PAYME_CALL_BACK_URL': 'https://ec3c-5-133-120-251.ngrok-free.app/payme/callback',  # merchant api callback url
+    'PAYME_CALL_BACK_URL': 'http://209.38.235.116/payme/callback',  # merchant api callback url
     'PAYME_ACCOUNT': 'order_id',
 }
-PAYMENT_HOST = 'http://159.89.107.246'
+PAYMENT_HOST = 'http://209.38.235.116'
 PAYMENT_USES_SSL = True  # set the True value if you are using the SSL
 PAYMENT_MODEL = 'home.Payment'
 
