@@ -11,6 +11,7 @@ from home.serializers import OrderSerializer
 
 from payme.views import MerchantAPIView
 from home.models import OrderTransactionsModel
+from rest_framework.exceptions import ValidationError
 
 
 # from home.modules.avia import ticketed_user_notify
@@ -57,19 +58,61 @@ class PaymeCallBackAPIView(MerchantAPIView):
 @api_view(['POST', ])
 def confirm_product(request):
     data = request.data
-    tr: OrderTransactionsModel = get_object_or_404(Order, order_id=data["order_id"], )
+
+    if "order_id" not in data or "type" not in data or "duration" not in data:
+        raise ValidationError("Missing required fields: 'order_id', 'type', and 'duration' must be provided.")
+
+    tr: OrderTransactionsModel = get_object_or_404(Order, order_id=data["order_id"])
+
+    if data["duration"] not in ["1_month", "1_year"]:
+        raise ValidationError("'duration' must be either '1_month' or '1_year'.")
+
+    if data["duration"] == "1_month":
+        amount = tr.amount  
+    elif data["duration"] == "1_year":
+        amount = tr.amount * 12 
+
     match data["type"]:
         case "CLICK":
-            click_payment = Payment.objects.create(variant="click", transaction_id=str(uuid4()),
-                                                   currency="sum", amount=tr.amount)
-            return_url = 'http://209.38.235.116/'  # Foydalanuvchini qaytarish kerak bo'lgan URL
-            url = PyClickMerchantAPIView.generate_url(order_id=click_payment.id, amount=tr.amount,
-                                                      return_url=return_url)
+            click_payment = Payment.objects.create(
+                variant="click",
+                transaction_id=str(uuid4()),
+                currency="sum",
+                amount=amount
+            )
+            return_url = 'http://209.38.235.116/' 
+            url = PyClickMerchantAPIView.generate_url(
+                order_id=click_payment.id,
+                amount=amount,
+                return_url=return_url
+            )
             print(url, "^^^^^^^^^^^^^   url  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
             return Response({"payment_url": url})
 
         case "PAYME":
             tr.type = OrderTransactionsModel.TransferTypeChoices.payme
             tr.save(update_fields=["type"])
-            return Response({"url": generate_link(tr.id, tr.amount * 100)})
+            return Response({"url": generate_link(tr.id, amount * 100)})
+
+        case _:
+            raise ValidationError("Invalid payment type. Supported types are 'CLICK' and 'PAYME'.")
+
+# @api_view(['POST', ])
+# def confirm_product(request):
+#     data = request.data
+#     tr: OrderTransactionsModel = get_object_or_404(Order, order_id=data["order_id"], )
+#     match data["type"]:
+#         case "CLICK":
+#             click_payment = Payment.objects.create(variant="click", transaction_id=str(uuid4()),
+#                                                    currency="sum", amount=tr.amount)
+#             return_url = 'http://209.38.235.116/'  # Foydalanuvchini qaytarish kerak bo'lgan URL
+#             url = PyClickMerchantAPIView.generate_url(order_id=click_payment.id, amount=tr.amount,
+#                                                       return_url=return_url)
+#             print(url, "^^^^^^^^^^^^^   url  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+#             return Response({"payment_url": url})
+
+#         case "PAYME":
+#             tr.type = OrderTransactionsModel.TransferTypeChoices.payme
+#             tr.save(update_fields=["type"])
+#             return Response({"url": generate_link(tr.id, tr.amount * 100)})
 
