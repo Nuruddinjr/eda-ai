@@ -20,6 +20,7 @@ class Users(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     tries = models.IntegerField(default=0)
     user_type = models.IntegerField(choices=UserType.choices, default=2)
+    has_active_subscription = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['user_type']
